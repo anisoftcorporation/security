@@ -1,0 +1,121 @@
+Name:Anirban Bhattacharya
+Email:abhatt58@asu.edu
+StudentID:1220962613
+
+Level0 
+Command:  ssh bandit0@bandit.labs.overthewire.org -p 2220
+bandit0@bandit:~$ ls -ltr
+total 4
+-rw-r----- 1 bandit1 bandit0 33 May  7  2020 readme
+bandit0@bandit:~$ cat readme 
+boJ9jbbUNNfktd78OOpsqOltutMc3MY1
+
+Level0->Level1
+Flag:boJ9jbbUNNfktd78OOpsqOltutMc3MY1
+Command: ssh bandit1@bandit.labs.overthewire.org -p 2220
+bandit1@bandit:~$ ls -ltr
+total 4
+-rw-r----- 1 bandit2 bandit1 33 May  7  2020 -
+bandit1@bandit:~$ cat < -
+CV1DtqXWVFXTvM2F0k09SHz0YwRINYA9
+
+Level1->Level2
+Flag:CV1DtqXWVFXTvM2F0k09SHz0YwRINYA9
+Command:ssh bandit2@bandit.labs.overthewire.org -p 2220
+bandit2@bandit:~$ ls -ltr
+total 4
+-rw-r----- 1 bandit3 bandit2 33 May  7  2020 spaces in this filename
+bandit2@bandit:~$ cat spaces\ in\ this\ filename 
+UmHadQclWmgdLOKQ3YNgjWxGoRMb5luK
+
+Level2->Level3 
+Flag:UmHadQclWmgdLOKQ3YNgjWxGoRMb5luK
+
+Level3->Level4
+Command:cat /home/bandit3/inhere/.hidden
+Flag:pIwrPrtPN36QITSp3EQaw936yaFoFgAB
+
+Level4->Level5
+Command: cat < -file07
+Flag:koReBOKuIDDepwhWk7jZC0RTdopnAYKh
+
+Level5->Level6
+Command:find . -type f -size 1033c ! -executable -exec file {} +
+Flag:DXjZPULLxYr17uwoI01bNLQbtFemEgo7
+
+Level6->Level7
+Command:find . -type f -size 33c -group bandit6
+cat /var/lib/dpkg/info/bandit7.password
+Flag:HKBPTKQnIay4Fw76bEy8PVxKEDQRKTzs
+
+Level7->Level8
+Command:cat data.txt |grep millionth
+Flag:cvX2JJa4CFALtqS87jk27qwqGhBM9plV
+
+Level8->Level9
+Command:sort data.txt|uniq -u
+Flag:UsvVyFSfZZWbi6wgC7dAFyFuR6jQQUhR
+
+Level9->Level10
+Command:strings data.txt |grep '=='
+Flag:truKLdjsbJ5g7yyJ2X2R0o3a5HQJFuLk
+
+Level10->Level11
+Command:base64 -d data.txt
+Flag:IFukwKGsFW8MOq3IRFqrxE1hxTNEbUPR
+
+Level11->Level12
+Command:cat data.txt |tr 'A-Za-z' 'N-ZA-Mn-za-m'
+Flag:5Te8Y4drgCRfCx8ugdwuEX8KFC6k2EUu
+
+Level12->Level13
+Command:xxd -r data.txt
+file data
+tar -xvf /
+gzip -d/
+bzip2 -d
+............repeat until we find data8 ASCII text 
+Flag:8ZjyCRiBWFYkneahHwxCv3wb2a1ORpYL
+
+Level13->Level14
+Command:ssh -i sshkey.private bandit14@localhost
+Flag:4wcYUJFw0k0XLShlDzztnTBHiqxU3b3e
+
+Level14->Level15
+Command:nc localhost 30000
+Flag:BfMYroe26WYalil77FoDi9qh59eK5xNr
+
+Level15->Level16
+Command:openssl s_client -connect localhost:30001
+Flag
+cluFn7wTiGryunymYOu4RcffSxQluehd
+
+Level16->Level17
+Command: 1. nmap -A localhost -p 31000-32000
+         2.openssl s_client -connect localhost:31790
+         3.chmod 400 private.txt
+         4.ssh -i private.txt bandit17@localhost
+         5.cat /etc/bandit_pass/bandit17
+Flag
+xLYVMN9WE5zQ5vHacb0sZEVqbrp7nBTn
+
+Level17->Level18
+Command: diff passwords.old passwords.new
+Flag
+kfBf3eYk5BPBRzwjqutbbfE887SVc5Yd
+
+Level18->Level19
+Command: ssh bandit18@bandit.labs.overthewire.org -p 2220 'cat readme'
+Flag
+IueksS7Ubh8G3DCwVzrTd8rAVOwq3M5x
+
+Level19->Level20
+Command: ./bandit20-do cat /etc/bandit_pass/bandit20
+Flag
+GbKksEFF4yrVs6il55v6gwY5aVje5f0j
+
+Level20->Level12
+Command: echo "GbKksEFF4yrVs6il55v6gwY5aVje5f0j" | nc -l localhost -p 12000 &
+         ./suconnect 12000
+Flag:gE269g2h3mw3pwgrj0Ha9Uoqen1c9DGr
+         

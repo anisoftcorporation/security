@@ -13,7 +13,7 @@
 #include <signal.h>
 #include <ctype.h>
 #include <errno.h>
-
+#include<time.h>
 #include <sys/types.h>
 
 #include <string.h>
@@ -25,7 +25,7 @@ void handle_accept_request(struct sockaddr_in server_address);
 void SIGINT_callback_handler(int signal_num);
 void get_command_from_url(char * url);
 int is_gzip_enabled(const char * str);
-
+char* getDate(void);
 int main(int argc, char *argv[]){
   //Validate port number has been passed in command line argument
   if(argc < 2){
@@ -71,18 +71,50 @@ int main(int argc, char *argv[]){
 
   return 0;
 }
+char* getDate(void)
+{
+    time_t current_time;
+    char* c_time_string;
 
+    /* Obtain current time. */
+    current_time = time(NULL);
+
+    if (current_time == ((time_t)-1))
+    {
+        (void) fprintf(stderr, "Failure to obtain the current time.\n");
+        exit(EXIT_FAILURE);
+    }
+
+    /* Convert to local time format. */
+    c_time_string = ctime(&current_time);
+
+    if (c_time_string == NULL)
+    {
+        (void) fprintf(stderr, "Failure to convert the current time.\n");
+        exit(EXIT_FAILURE);
+    }
+
+    /* Print to stdout. ctime() has already added a terminating newline character. */
+    (void) printf("Current time is %s", c_time_string);
+    return c_time_string;
+    exit(EXIT_SUCCESS);
+}
 void handle_accept_request(struct sockaddr_in server_address){
+  char * curDate = getDate();
+  printf("Current date is %s",curDate);
   char * ok_response_header = "HTTP/1.1 200 OK\n"
-                              "Content-Type: text/html\n"
+                              "Content-Type: text/html; charset=utf-8\n"
                               "Accept-Ranges: bytes\n"
                               "Connection: close\n"
-                              "\n";
+                              "Date: ";
+                              strcat(ok_response_header,curDate);
+                               strcat(ok_response_header,"\n\r\n");
+                              
   char * not_found_response_header = "HTTP/1.1 404 NOTFOUND\n"
-                                    "Content-Type: text/html\n"
+                                    "Content-Type: text/html; charset=utf-8\n"
                                     "Accept-Ranges: bytes\n"
                                     "Connection: close\n"
-                                    "\n";
+                                    "\r\n";
   char * get_request = "GET";
 
   while(1){
@@ -90,13 +122,13 @@ void handle_accept_request(struct sockaddr_in server_address){
     int len_of_address = sizeof(server_address);
     int client_socket_descriptor = accept(server_socket, (struct sockaddr *)&server_address, (socklen_t *)&len_of_address);
 
-    char buff[1000];
+    char buff[2048];
     char url[1000];
 
     read(client_socket_descriptor, buff, 1000);
     printf("%s\n", buff);
 
-    char command_result[1000];
+    char command_result[2048];
     char response_header[1000];
 
     if(strlen(buff)<= 10 || strncmp(get_request, buff, strlen(get_request)) != 0){
@@ -122,7 +154,7 @@ void handle_accept_request(struct sockaddr_in server_address){
       else{
        
         strcat(url, " 2>&1");
-        char tmp_buff[1000];
+        char tmp_buff[2048];
         FILE* file = popen(url, "r");
         if(file == NULL){
           strcpy(response_header, not_found_response_header);
@@ -131,7 +163,8 @@ void handle_accept_request(struct sockaddr_in server_address){
         else{
           int flag = 0;
           while (fgets(tmp_buff, sizeof(tmp_buff), file) != NULL)
-          {
+          { 
+            printf("In erading stream");
             if(flag == 0){
                 strcpy(command_result, tmp_buff);
                 flag++;

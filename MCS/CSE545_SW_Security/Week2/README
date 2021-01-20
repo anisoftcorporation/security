@@ -2,3 +2,41 @@ Name:Anirban Bhattacharya
 Email:abhatt58@asu.edu
 StudentID:1220962613
 
+Steps to Install/Make:
+1. Extract the archive using tar -zxvf submission.tar.gz
+2. make
+3. You will see a new executable file generated normal_web_server
+ 
+
+Steps to Run:
+1. Execute normal_web_server with PORT number as an argument
+   e.g.  ./normal_web_server 8080
+2. Then the web server can be accessed http://HOST:8080
+3. The program will always return HTTP 404 if the URL doesn't have /exec/
+4. After exec if we pas any UNIX command, the server will execute that command and return the Output to the client in HTTP 200 OK respone
+   e.g. http://127.0.0.1:8080/exec/ls will return the content of the folder where the normal_web_server executable is in.
+
+The Working Logic
+1. The backdoor has been created using Simple C socket AF_INET, SOCK_STREAM
+2. We used the argv to get the PORT number from the command line argument and ussed it to create the Server struct
+3. Then we did bind the socket on that Address
+4. The program then listens on that socket
+5. When a client connects to it, it accepts the connection and then, the following things happen
+ a. The code checks the first line in the messsage read from the client
+ b. If the line doesn't start with GET then, respond with Invalid type only GET allowed
+ c. Otherwise, get the first line and get the URL
+ d. If the URL doesn't have /exec/ , send 404 HTTP response
+ e. Else , get everything after /exec/ and create a Fstream with POPEN to execute the command and write back the stream to the socket with HTTP 200 OK header
+
+ The HTTP 200 OK header:
+                              "HTTP/1.1 200 OK\n"
+                              "Content-Type: text/html\n"
+                              "Accept-Ranges: bytes\n"
+                              "Connection: close\n"
+                              "\n";
+The HTTP 404 NOTFOUND header:
+                                    "HTTP/1.1 404 NOTFOUND\n"
+                                    "Content-Type: text/html\n"
+                                    "Accept-Ranges: bytes\n"
+                                    "Connection: close\n"
+                                    "\n";

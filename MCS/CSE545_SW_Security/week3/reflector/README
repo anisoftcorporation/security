@@ -1,0 +1,20 @@
+Name:Anirban Bhattacharya
+Email:abhatt58@asu.edu
+StudentID:1220962613
+
+Steps to Install/Make:
+1. Extract the archive using tar -zxvf submission.tar.gz
+2. make
+3. You will see a new executable file generated reflector
+
+To Execute the program, use the below command
+
+./reflector --interface eth0 --victim-ip 192.168.1.10  --victim-ethernet 31:16:A9:63:FF:83 --reflector-ip 192.168.1.20 --reflector-ethernet 38:45:E3:89:B5:56
+
+HOw is it working
+1. Using Scapy the code sniffs on the Network through the interface passed as argument
+2. Any packet captured is analyzed using a call_back function where , we are checking what kind of Packet is it
+3. if it is ARP if op=1  and who is "VIcIM's IP" , then reflector responding with its own mac address and op=2
+4. So atatcker machine will keep sending next messages to reflector.
+5. For other packets it simpy changing src and dest and re-sending to atatcker (in personating src as the victim's IP)
+ 

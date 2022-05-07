@@ -1,0 +1,12 @@
+/Users/abhattacharya/Documents/Ani_Asu/Crypto/P2/obj/Debug/netcoreapp3.1/P2.csprojAssemblyReference.cache
+/Users/abhattacharya/Documents/Ani_Asu/Crypto/P2/obj/Debug/netcoreapp3.1/P2.AssemblyInfoInputs.cache
+/Users/abhattacharya/Documents/Ani_Asu/Crypto/P2/obj/Debug/netcoreapp3.1/P2.AssemblyInfo.cs
+/Users/abhattacharya/Documents/Ani_Asu/Crypto/P2/obj/Debug/netcoreapp3.1/P2.csproj.CoreCompileInputs.cache
+/Users/abhattacharya/Documents/Ani_Asu/Crypto/P2/bin/Debug/netcoreapp3.1/P2.deps.json
+/Users/abhattacharya/Documents/Ani_Asu/Crypto/P2/bin/Debug/netcoreapp3.1/P2.runtimeconfig.json
+/Users/abhattacharya/Documents/Ani_Asu/Crypto/P2/bin/Debug/netcoreapp3.1/P2.runtimeconfig.dev.json
+/Users/abhattacharya/Documents/Ani_Asu/Crypto/P2/bin/Debug/netcoreapp3.1/P2.dll
+/Users/abhattacharya/Documents/Ani_Asu/Crypto/P2/bin/Debug/netcoreapp3.1/P2.pdb
+/Users/abhattacharya/Documents/Ani_Asu/Crypto/P2/obj/Debug/netcoreapp3.1/P2.dll
+/Users/abhattacharya/Documents/Ani_Asu/Crypto/P2/obj/Debug/netcoreapp3.1/P2.pdb
+/Users/abhattacharya/Documents/Ani_Asu/Crypto/P2/obj/Debug/netcoreapp3.1/P2.genruntimeconfig.cache
